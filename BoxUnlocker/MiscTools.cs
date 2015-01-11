@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BoxUnlocker
 {
-    class Tools
+    class MiscTools
     {
         public static void DebugMessage(string iMsg)
         {

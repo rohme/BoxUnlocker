@@ -314,8 +314,8 @@ namespace BoxUnlocker
                     if (_Settings.ExecField)
                     {
                         if (_FFACE.Target.Name == "Treasure Casket" &&
-                            Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum1) || // ^どうする？$ 
-                            Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3) ) //^どうする？（残り([0-9]*)回）$
+                            MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum1) || // ^どうする？$ 
+                            MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3) ) //^どうする？（残り([0-9]*)回）$
                         {
                             SetMessage("箱空け実行中");
                             Boolean r = StartField();
@@ -332,9 +332,9 @@ namespace BoxUnlocker
                         if(_FFACE.Player.Zone == Zone.Western_Adoulin &&
                             _FFACE.Target.Name == "Kerney" &&
                             _FFACE.Menu.IsOpen &&
-                            (Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum1) || // ^どうする？$
-                             Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3) || //^どうする？（残り([0-9]*)回）$
-                             Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum4)))  //^もう1度やりますか？(.*)$
+                            (MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum1) || // ^どうする？$
+                             MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3) || //^どうする？（残り([0-9]*)回）$
+                             MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum4)))  //^もう1度やりますか？(.*)$
 
                         {
                             Constant.MumStartRet r = StartMum();
@@ -364,19 +364,19 @@ namespace BoxUnlocker
             while (Running)
             {
                 //どうする？
-                if (_FFACE.Menu.IsOpen && Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField1))
+                if (_FFACE.Menu.IsOpen && MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField1))
                 {
                     //開錠するを選択
                     if (!SetDialogOptionIndex(1, true)) return false;
                     if (!WaitOpenDialog(Constant.DialogStringField2, false)) return false;
                 }
                 //どうする？（残り([0-9]*)回）
-                if (_FFACE.Menu.IsOpen && Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField2))
+                if (_FFACE.Menu.IsOpen && MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField2))
                 {
                     //残り回数取得
-                    if (Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField2))
+                    if (MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField2))
                     {
-                        ArrayList al = Tools.GetRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField2);
+                        ArrayList al = MiscTools.GetRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringField2);
                         box.TryRemainCnt = int.Parse(al[0].ToString());
                     }
                     //string[] r = getMatchDialogQuestionValue(Constant.DialogStringMum3);
@@ -442,7 +442,7 @@ namespace BoxUnlocker
             while (Running)
             {
                 //どうする？
-                if (_FFACE.Menu.IsOpen && Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum1) )
+                if (_FFACE.Menu.IsOpen && MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum1) )
                 {
                     box = new Box(gi.Id);
                     SetTextboxText(txtTargets, box.EnableNoLine);
@@ -458,19 +458,19 @@ namespace BoxUnlocker
                     if (!WaitOpenDialog(Constant.DialogStringMum2, false)) return Constant.MumStartRet.異常終了;
                 }
                 //難易度を選択してください((.*):([0-9]*))
-                if (_FFACE.Menu.IsOpen && Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum2))
+                if (_FFACE.Menu.IsOpen && MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum2))
                 {
                     if (!SetDialogOptionIndex(gi.MenuIndex, true)) return Constant.MumStartRet.異常終了;
                     if (!WaitOpenDialog(Constant.DialogStringMum3, false)) return Constant.MumStartRet.異常終了;
                     box = new Box(gi.Id);
                 }
                 //どうする？（残り([0-9]*)回）
-                if (_FFACE.Menu.IsOpen && Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3))
+                if (_FFACE.Menu.IsOpen && MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3))
                 {
                     //残り回数取得
-                    if (Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3))
+                    if (MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3))
                     {
-                        ArrayList al = Tools.GetRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3);
+                        ArrayList al = MiscTools.GetRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum3);
                         box.TryRemainCnt = int.Parse(al[0].ToString());
                     }
                     //string[] r = getMatchDialogQuestionValue(Constant.DialogStringMum3);
@@ -527,7 +527,7 @@ namespace BoxUnlocker
                     }
                 }
                 //もう1度やりますか？
-                if (_FFACE.Menu.IsOpen && Tools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum4))
+                if (_FFACE.Menu.IsOpen && MiscTools.IsRegexString(_FFACE.Menu.DialogText.Question, Constant.DialogStringMum4))
                 {
                     //規定回数開けてたら終了
                     if (_Settings.MumTryCount != 0 &&

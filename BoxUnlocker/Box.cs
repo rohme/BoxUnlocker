@@ -108,7 +108,7 @@ namespace BoxUnlocker
                     bo.InputNo = 0;
                 }
             }
-            Tools.DebugMessage("残り回数： " + TryRemainCnt.ToString() + " 指示：" + bo.Operation.ToString() + "/" + bo.InputNo.ToString());
+            MiscTools.DebugMessage("残り回数： " + TryRemainCnt.ToString() + " 指示：" + bo.Operation.ToString() + "/" + bo.InputNo.ToString());
             return bo;
         }
         /// <summary>
@@ -121,12 +121,12 @@ namespace BoxUnlocker
             ArrayList reg = new ArrayList();
             for (int i = 0; i < iChatArr.Count; i++)
             {
-                if (!Tools.IsRegexString(iChatArr[i].ToString(), BoxHintsStringArr)) continue;
-                Tools.DebugMessage("指示文字列：" + iChatArr[i].ToString());
+                if (!MiscTools.IsRegexString(iChatArr[i].ToString(), BoxHintsStringArr)) continue;
+                MiscTools.DebugMessage("指示文字列：" + iChatArr[i].ToString());
                 for (int j = 0; j < EnableNo.Count; j++)
                 {
                     //カギの数字は([0-9]*)より(大きい|小さい)ようだ……。
-                    reg = Tools.GetRegexString(iChatArr[i].ToString(), BoxHintsString1);
+                    reg = MiscTools.GetRegexString(iChatArr[i].ToString(), BoxHintsString1);
                     if (reg.Count > 0)
                     {
                         Hints.Add(iChatArr[i]);
@@ -143,14 +143,14 @@ namespace BoxUnlocker
                         }
                     }
                     //カギの数字は([0-9]*)より大きく、([0-9]*)より小さいようだ……。
-                    reg = Tools.GetRegexString(iChatArr[i].ToString(), BoxHintsString2);
+                    reg = MiscTools.GetRegexString(iChatArr[i].ToString(), BoxHintsString2);
                     if (reg.Count > 0)
                     {
                         if (int.Parse(EnableNo[j].ToString()) > int.Parse(reg[0].ToString()) &&
                             int.Parse(EnableNo[j].ToString()) < int.Parse(reg[1].ToString())) tmpArr.Add(EnableNo[j]);
                     }
                     //カギの数字の([0-9])桁目は([0-9])か([0-9])か([0-9])のどれかのようだ……。
-                    reg = Tools.GetRegexString(iChatArr[i].ToString(), BoxHintsString3);
+                    reg = MiscTools.GetRegexString(iChatArr[i].ToString(), BoxHintsString3);
                     if (reg.Count > 0)
                     {
                         int col = 0;
@@ -167,14 +167,14 @@ namespace BoxUnlocker
                             EnableNo[j].ToString().Substring(col, 1) == reg[3].ToString()) tmpArr.Add(EnableNo[j]);
                     }
                     //カギの2桁の数字のどちらかは([0-9])のようだ……。
-                    reg = Tools.GetRegexString(iChatArr[i].ToString(), BoxHintsString4);
+                    reg = MiscTools.GetRegexString(iChatArr[i].ToString(), BoxHintsString4);
                     if (reg.Count > 0)
                     {
                         if (EnableNo[j].ToString().Substring(0, 1) == reg[0].ToString() ||
                             EnableNo[j].ToString().Substring(1, 1) == reg[0].ToString()) tmpArr.Add(EnableNo[j]);
                     }
                     //カギの数字の([0-9])桁目は(偶数|奇数)のようだ……。
-                    reg = Tools.GetRegexString(iChatArr[i].ToString(), BoxHintsString5);
+                    reg = MiscTools.GetRegexString(iChatArr[i].ToString(), BoxHintsString5);
                     if (reg.Count > 0)
                     {
                         int col = 0;
@@ -190,19 +190,19 @@ namespace BoxUnlocker
                         if (reg[1].Equals("奇数") && (int.Parse(EnableNo[j].ToString().Substring(col, 1)) % 2 == 1)) tmpArr.Add(EnableNo[j]);
                     }
                     //(.*)は、開錠に成功した！
-                    if (Tools.GetRegexString(iChatArr[i].ToString(), BoxHintsString6).Count > 0)
+                    if (MiscTools.GetRegexString(iChatArr[i].ToString(), BoxHintsString6).Count > 0)
                     {
                         isOpenSuccess = true;
                     }
                     //(.*)は、開錠に失敗した……。
-                    if (Tools.GetRegexString(iChatArr[i].ToString(), BoxHintsString7).Count > 0)
+                    if (MiscTools.GetRegexString(iChatArr[i].ToString(), BoxHintsString7).Count > 0)
                     {
                         isOpenFailed = true;
                     }
                 }
                 EnableNo = tmpArr;
                 EnableNoLine = getEnableNoLine();
-                Tools.DebugMessage("指示文字列結果：" + EnableNoLine);
+                MiscTools.DebugMessage("指示文字列結果：" + EnableNoLine);
             }
         }
         /// <summary>
