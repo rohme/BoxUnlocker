@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <log4net>
+      <appender name="AllAppender" type="log4net.Appender.FileAppender">
+        <File value="BoxUnlocker.log" />
+        <AppendToFile value="true" />
+        <lockingModel type="log4net.Appender.FileAppender+MinimalLock" />
+        <layout type="log4net.Layout.PatternLayout">
+            <ConversionPattern value="%date{yy/MM/dd-HH:mm:ss,fff} [%-5level] %message - %logger.%method(%line)%n" />
+        </layout>
+        <Encoding value="UTF-8"/>
+      </appender>
+      <root>
+        <!--出力するログレベル ALL,TRACE,DEBUG,INFO,WARN,ERROR,FATAL,OFF-->
+        <level value="INFO" />
+        <appender-ref ref="AllAppender" />
+      </root>
+  </log4net>
+</configuration>

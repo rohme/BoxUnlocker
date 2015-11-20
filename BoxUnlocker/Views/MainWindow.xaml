@@ -1,0 +1,334 @@
+﻿<Controls:MetroWindow x:Class="BoxUnlocker.Views.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+                      xmlns:v="clr-namespace:BoxUnlocker.Views"
+                      xmlns:vm="clr-namespace:BoxUnlocker.ViewModels"
+                      xmlns:converter="clr-namespace:BoxUnlocker.Converter"
+                      Title="BoxUnlocker"
+                      TitleCaps="False"
+                      MinHeight="{Binding MinHeight}"
+                      MinWidth="{Binding MinWidth}"
+                      Icon="/BoxUnlocker;component/Resources/BoxUnlocker.ico"
+                      GlowBrush="{DynamicResource AccentColorBrush}" 
+                      ShowMaxRestoreButton="False"
+                      SaveWindowPosition="True"
+                      WindowTransitionsEnabled="False"
+                      ResizeMode="CanResizeWithGrip" Width="176" Height="273">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Controls:MetroWindow.Resources>
+        <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converter:MumRemainCountConverter x:Key="MumRemainCountConverter"/>
+    </Controls:MetroWindow.Resources>
+
+    <i:Interaction.Behaviors>
+    </i:Interaction.Behaviors>
+
+    <i:Interaction.Triggers>
+        <!--Viewに特別な要件が存在しない限りは、トリガーやアクションの自作にこだわらず積極的にコードビハインドを使いましょう -->
+        <!--Viewのコードビハインドは、基本的にView内で完結するロジックとViewModelからのイベントの受信(専用リスナを使用する)に限るとトラブルが少なくなります -->
+        <!--Livet1.1からはコードビハインドでViewModelのイベントを受信するためのWeakEventLisnterサポートが追加されています -->
+
+        <l:InteractionMessageTrigger Messenger="{Binding Messenger}">
+            <l:TransitionInteractionMessageAction/>
+        </l:InteractionMessageTrigger>
+
+        <!--WindowのContentRenderedイベントのタイミングでViewModelのInitializeメソッドが呼ばれます-->
+        <i:EventTrigger EventName="ContentRendered">
+            <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="Initialize"/>
+        </i:EventTrigger>
+
+        <!--Windowが閉じたタイミングでViewModelのDisposeメソッドが呼ばれます-->
+        <i:EventTrigger EventName="Closed">
+            <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="WindowClose"/>
+            <l:DataContextDisposeAction/>
+        </i:EventTrigger>
+
+        <!--WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください-->
+
+    </i:Interaction.Triggers>
+
+    <!--タイトルコマンド-->
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Controls:ProgressRing  IsActive="{Binding Pol.IsAttaching, Mode=OneWay}" 
+                                    Width="10" 
+                                    Height="10" 
+                                    Foreground="White"/>
+            <Button x:Name="Player"
+                    Content="{Binding Pol.PlayerName}" 
+                    Command="{Binding SelectPolCommand}"
+                    Cursor="Hand"
+                    ToolTip="プロセス切り替え">
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+
+    <!--メイン-->
+    <DockPanel>
+        <Grid  Margin="2,0,2,0" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <!--対象-->
+            <TextBlock Text="対象:" FontSize="15" VerticalAlignment="Center" Margin="0,0,2,0" Grid.Column="0"/>
+            <TextBlock Text="{Binding Unlocker.TargetBoxName}" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="1"/>
+            <!--回数-->
+            <TextBlock Text="回数:" FontSize="15" VerticalAlignment="Center" Margin="0,0,2,0" Grid.Column="3"/>
+            <TextBlock Text="{Binding Unlocker.Box.CurrentCount, Mode=OneWay}" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="4"/>
+            <TextBlock Text="/" FontSize="15" VerticalAlignment="Center" FontWeight="Bold" Grid.Column="5"/>
+            <TextBlock Text="{Binding Unlocker.Box.MaxCount}" FontSize="15" VerticalAlignment="Center" FontWeight="Bold" Grid.Column="6"/>
+            <!--監視実行-->
+            <ToggleButton Command="{Binding ExecuteCommand}"
+                          IsChecked="{Binding Unlocker.IsMonitoring ,Mode=OneWay}"
+                          Width="36"
+                          Height="36"
+                          Style="{DynamicResource MetroCircleToggleButtonStyle}"
+                          Cursor="Hand"
+                          ToolTip="{Binding ExecuteToopTip}"
+                          Margin="5,0,0,0"
+                          Grid.Column="7">
+                <Rectangle Width="14"
+                           Height="14"
+                           Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                                     Visual="{DynamicResource appbar_control_play}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+                <!--
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="ActionExecute"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                -->
+            </ToggleButton>
+            <!--
+            <ToggleButton Width="36" 
+                            Height="36" 
+                            Padding="3,0,0,0" 
+                            Style="{DynamicResource MetroCircleToggleButtonStyle}" 
+                            Foreground="Green" 
+                            ToolTip="監視の実行と停止" 
+                            Cursor="Hand"
+                            Grid.Column="5">
+                <Rectangle Width="16" Height="16" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_control_play}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </ToggleButton>
+            -->
+            <!--設定画面を開く-->
+            <ToggleButton IsChecked="{Binding ElementName=SettingsFlyout, Path=IsOpen}" 
+                          IsEnabled="{Binding Unlocker.IsMonitoring, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                          Width="36" 
+                          Height="36" 
+                          Style="{DynamicResource MetroCircleToggleButtonStyle}" 
+                          ToolTip="設定" 
+                          Cursor="Hand"
+                          Grid.Column="8">
+                <Rectangle Width="16" Height="16" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_settings}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </ToggleButton>
+        </Grid>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem Width="15" DockPanel.Dock="Right"/>
+            <StatusBarItem Content="{Binding Unlocker.MumRemainCount, Converter={StaticResource MumRemainCountConverter}}" 
+                           DockPanel.Dock="Right"/>
+            <StatusBarItem Content="{Binding Unlocker.StatusText}"/>
+        </StatusBar>
+        <GroupBox Header="ヒント" 
+                  Margin="2,2,2,0" 
+                  DockPanel.Dock="Top" Grid.Row="1">
+            <TextBlock Text="{Binding Unlocker.Box.HintsForDisplay, Mode=OneWay}"
+                        FontWeight="Bold"
+                        Height="90"/>
+        </GroupBox>
+        <GroupBox Header="候補" 
+                  Margin="2,2,2,2" 
+                  Grid.Row="2">
+            <TextBlock Text="{Binding Unlocker.Box.ValidNumbersForDisplay, Mode=OneWay}" 
+                       FontWeight="Bold"
+                       TextWrapping="Wrap" />
+        </GroupBox>
+    </DockPanel>
+
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout x:Name="SettingsFlyout" 
+                             Header="設定" 
+                             Position="Right" 
+                             Theme="Adapt" 
+                             IsModal="True">
+                <Border Padding="2,0,2,2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!--監視対象-->
+                        <GroupBox Header="監視対象" Margin="0" Padding="2"  Grid.Row="0" Grid.Column="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Label Content="フィールド" 
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center" 
+                                       Grid.Row="0" Grid.Column="0"/>
+                                <Controls:ToggleSwitch IsChecked="{Binding Settings.MonitoringField}"
+                                                       IsEnabled="{Binding Unlocker.IsMonitoring, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                                                       Grid.Row="0" 
+                                                       Grid.Column="1" />
+                                <Label Content="MUM" 
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center" 
+                                       Grid.Row="1" 
+                                       Grid.Column="0"/>
+                                <Controls:ToggleSwitch IsChecked="{Binding Settings.MonitoringMum}"
+                                                       IsEnabled="{Binding Unlocker.IsMonitoring, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                                                       Grid.Row="1" 
+                                                       Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                        <!--Mum設定-->
+                        <GroupBox Header="MUM設定" 
+                                  Margin="0" 
+                                  Padding="2"  
+                                  Grid.Row="1" 
+                                  Grid.Column="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Label Content="種類" 
+                                       FontWeight="Bold"
+                                       Grid.Row="0" 
+                                       Grid.Column="0"/>
+                                <ComboBox ItemsSource="{Binding MumTypeMap}" 
+                                          IsEnabled="{Binding Unlocker.IsMonitoring, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                                          DisplayMemberPath="Value" 
+                                          SelectedValuePath="Key" 
+                                          SelectedValue="{Binding Settings.MumBoxType}"  
+                                          Grid.Row="0" 
+                                          Grid.Column="1"/>
+                                <Label Content="回数" 
+                                       FontWeight="Bold"
+                                       Grid.Row="1" 
+                                       Grid.Column="0"/>
+                                <Controls:NumericUpDown Value="{Binding Settings.MumMaxCount}" 
+                                                        IsEnabled="{Binding Unlocker.IsMonitoring, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                                                        Minimum="0" 
+                                                        Maximum="10000" 
+                                                        Interval="100" 
+                                                        Grid.Row="1" 
+                                                        Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                        <!--その他-->
+                        <GroupBox Header="その他" Margin="0" Padding="2" Grid.Row="2" Grid.Column="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Label Content="BaseWait" 
+                                       FontWeight="Bold"
+                                       Grid.Row="0" 
+                                       Grid.Column="0"/>
+                                <Controls:NumericUpDown Value="{Binding Settings.BaseWait}" 
+                                                        IsEnabled="{Binding Unlocker.IsMonitoring, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                                                        Width="100" 
+                                                        Minimum="0" 
+                                                        Maximum="1000" 
+                                                        Interval="100" 
+                                                        Grid.Row="0" 
+                                                        Grid.Column="1"/>
+                                <Label Content="ChatWait" 
+                                       FontWeight="Bold"
+                                       Grid.Row="1" 
+                                       Grid.Column="0"/>
+                                <Controls:NumericUpDown Value="{Binding Settings.ChatWait}"
+                                                        IsEnabled="{Binding Unlocker.IsMonitoring, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                                                        Width="100" 
+                                                        Minimum="0" 
+                                                        Maximum="2000" 
+                                                        Interval="100" 
+                                                        Grid.Row="1" 
+                                                        Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                        <!--バージョン情報-->
+                        <GroupBox Header="バージョン情報" 
+                                  Margin="0,0,2,0" 
+                                  Padding="2" 
+                                  Grid.Row="0" 
+                                  Grid.Column="0" 
+                                  Grid.RowSpan="3">
+                            <StackPanel>
+                                <Image Source="/BoxUnlocker;component/BoxUnlocker.ico" Width="48" Height="48"/>
+                                <TextBlock Text="{Binding ApplicationName}" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ApplicationVersion}" HorizontalAlignment="Center"  FontSize="14"/>
+                                <!--github.com-->
+                                <Button Command="{Binding GitHubCommand}" ToolTip="GitHubからソースを取得" Margin="0,10,0,0">
+                                    <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                                        <Rectangle Width="16" Height="16" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+                                            <Rectangle.OpacityMask>
+                                                <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_social_github_octocat_solid}" />
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                        <TextBlock Margin="2,0,0,0" FontSize="15" FontWeight="Bold">GitHub</TextBlock>                                        
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </Border>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+</Controls:MetroWindow>
