@@ -16,7 +16,7 @@ namespace BoxUnlocker
         public const string IniKeyWindowWidth = "WindowWidth";
         public const int IniDefaultWindowWidth = 300;
         public const string IniKeyBaseWait = "BaseWait";
-        public const int IniDefaultBaseWait = 200;
+        public const int IniDefaultBaseWait = 300;
         public const string IniKeyChatWait = "ChatWait";
         public const int IniDefaultChatWait = 1000;
         public const string IniKeyMonitoringField = "MonitoringField";
