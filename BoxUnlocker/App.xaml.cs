@@ -1,9 +1,8 @@
-﻿using System.Windows;
+﻿using System;
 using System.Diagnostics;
 using System.Reflection;
-
+using System.Windows;
 using Livet;
-using BoxUnlocker.Views;
 using log4net;
 
 namespace BoxUnlocker
@@ -18,26 +17,38 @@ namespace BoxUnlocker
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             DispatcherHelper.UIDispatcher = Dispatcher;
-            //AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             var ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             logger.InfoFormat("{0} {1} 起動 =========================", ver.ProductName, string.Format("Ver{0}.{1}.{2}", ver.ProductMajorPart, ver.ProductMinorPart, ver.ProductBuildPart));
 
-            Views.MainWindow mw = new MainWindow();
-            mw.Show();
+            var vm = new ViewModels.MainViewModel();
+            var v = new Views.MainWindow() { DataContext = vm };
+            v.Show();
         }
 
-        //集約エラーハンドラ
-        //private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        //{
-        //    //TODO:ロギング処理など
-        //    MessageBox.Show(
-        //        "不明なエラーが発生しました。アプリケーションを終了します。",
-        //        "エラー",
-        //        MessageBoxButton.OK,
-        //        MessageBoxImage.Error);
-        //
-        //    Environment.Exit(1);
-        //}
+        /// <summary>
+        /// 集約エラーハンドラ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = e.ExceptionObject as Exception;
+            if (ex != null) ShowError(ex, "UnhandledException");
+            System.Environment.Exit(1); // プログラム終了
+        }
+
+        /// <summary>
+        /// エラーメッセージの表示
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="title"></param>
+        private void ShowError(Exception e, string title)
+        {
+            logger.Fatal(title, e);
+            string msg = string.Format("補足されないエラーが発生しました。\r詳細はログファイルを参照してください。\r\r{0}\r{1}", e.Message, e.StackTrace);
+            MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 }
