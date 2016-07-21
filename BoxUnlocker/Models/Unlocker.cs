@@ -280,7 +280,10 @@ namespace BoxUnlocker.Models
                                 SetViewData();
                             }
                             // 箱の操作
-                            if (!DoOperation(BoxType.Mum, ref operation)) return false;
+                            if (!DoOperation(BoxType.Mum, ref operation))
+                            {
+                                return false;
+                            }
                             if (operation.OperationType == OperationType.Success) SetStatusText("箱空け成功");
                             else if (operation.OperationType == OperationType.Failed) SetStatusText("箱空け失敗");
                         }
@@ -461,10 +464,10 @@ namespace BoxUnlocker.Models
         private string GetHintFromChat()
         {
             string ret = string.Empty;
+            ChatLine cl;
             while (string.IsNullOrEmpty(ret))
             {
-                ChatLine cl = pol.Api.Chat.GetNextChatLine();
-                if (cl != null)
+                while ((cl = pol.Api.Chat.GetNextChatLine()) != null)
                 {
                     Console.WriteLine(cl.Text);
                     if (this.Box.IsHint(cl.Text))
