@@ -17,11 +17,9 @@
                       ShowMaxRestoreButton="False"
                       SaveWindowPosition="True"
                       WindowTransitionsEnabled="False"
-                      ResizeMode="CanResizeWithGrip" Width="176" Height="273">
-
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
+                      ResizeMode="CanResizeWithGrip" 
+                      Width="300" 
+                      Height="300">
 
     <Controls:MetroWindow.Resources>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
